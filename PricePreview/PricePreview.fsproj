@@ -51,6 +51,7 @@
     <Compile Include="Domain.fs" />
     <Compile Include="Http.fs" />
     <Compile Include="Hofer.fs" />
+    <Compile Include="Clever.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
