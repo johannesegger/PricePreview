@@ -2,36 +2,14 @@
 
 open System
 open System.Globalization
+open Domain
 
-module Http =
-    open System.Net.Http
-    open System.Text
-    open HtmlAgilityPack
-
-    let get (url: string) = async {
-        printfn "Fetching %s" url
-        use client = new HttpClient()
-        let! response = client.GetAsync url |> Async.AwaitTask
-        let! content = response.Content.ReadAsStreamAsync() |> Async.AwaitTask
-        let document = HtmlDocument()
-        document.Load(content, Encoding.UTF8)
-        return document
-    }
-
-let tryParsePrice (text: string) =
+let private tryParsePrice (text: string) =
     text.Replace('\u2013', '0')
     |> fun x -> Double.TryParse(x, NumberStyles.Float ||| NumberStyles.AllowThousands, CultureInfo.GetCultureInfo "de-AT")
     |> function
     | true, value -> Some value
     | _ -> None
-
-type Product = {
-    Name: string
-    Amount: string
-    PriceString: string
-    Price: float option
-    BasePrice: string option
-}
 
 let getProducts() = async {
     let! startPage = Http.get "https://www.hofer.at/de/"
