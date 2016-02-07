@@ -52,6 +52,7 @@
     <Compile Include="Http.fs" />
     <Compile Include="Hofer.fs" />
     <Compile Include="Clever.fs" />
+    <Compile Include="Unimarkt.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
