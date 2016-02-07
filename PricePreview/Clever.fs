@@ -4,7 +4,7 @@ open System
 open System.Globalization
 open Domain
 
-let tryParsePrice (text: string) =
+let private tryParsePrice (text: string) =
     Double.TryParse(text, NumberStyles.Float ||| NumberStyles.AllowThousands ||| NumberStyles.AllowCurrencySymbol, CultureInfo.GetCultureInfo "de-AT")
     |> function
     | true, value -> Some value
