@@ -1,60 +1,70 @@
 ﻿namespace PricePreview.Desktop
 
 open System
-open System.Windows
-open System.Windows.Input
-
 open FsXaml
+open ReactiveUI
+open Domain
+open ReactiveObjectExtensions
+open FSharp.Control.Reactive
 
-open FSharp.ViewModule
-open FSharp.ViewModule.Validation
+type UIProduct(product) as self =
+    inherit ReactiveObject()
+
+    let (amount, unit) = Amount.stringify product.Amount
+    let amountRef = ref 0.
+    let obsPrice =
+        self.WhenAnyValue(fun x -> x.Amount)
+        |> Observable.map (fun x -> x / amount * product.Price)
+        |> Observable.toProperty self <@ fun (x: UIProduct) -> x.Price @>
+
+    member x.Name = product.Name
+    member x.Amount
+        with get() = amountRef.Value
+        and set value = self.RaiseAndSetIfChanged(amountRef, value, <@@ self.Amount @@>)
+    member x.Unit = unit
+    member x.Price = obsPrice.Value
+
+type Shop(name: string, products: Product list, productFilter) as self =
+    inherit ReactiveObject()
+
+    let uiProducts =
+        products
+        |> List.sortBy (fun x -> x.Name)
+        |> List.map UIProduct
+
+    let obsProducts =
+        productFilter
+        |> Observable.map (fun searchText ->
+            uiProducts
+            |> List.filter (fun x -> x.Name.IndexOf(searchText, StringComparison.CurrentCultureIgnoreCase) > -1)
+        )
+        |> Observable.toPropertyWithInitialValue self <@ fun (x: Shop) -> x.Products @> []
+
+    let obsTotalPrice =
+        uiProducts
+        |> List.map (fun p ->
+            p.WhenAnyValue(fun x -> x.Price)
+        )
+        |> Observable.combineLatestSeq
+        |> Observable.map (fun l -> Seq.sum l)
+        |> Observable.toProperty self <@ fun (x: Shop) -> x.TotalPrice @>
+
+    member x.Name = name
+    member x.Products = obsProducts.Value
+    member x.TotalPrice = obsTotalPrice.Value
 
 type MainViewModel() as self = 
-    inherit ViewModelBase()
+    inherit ReactiveObject()
     
-    // Using validation with default naming
-    let firstName = self.Factory.Backing(<@ self.FirstName @>, "", notNullOrWhitespace >> noSpaces >> notEqual "Reed")
-    
-    // Using validation with custom name
-    let validateName = 
-        validate "Last Name" 
-        >> notNullOrWhitespace 
-        >> fixErrors
-        >> hasLengthAtLeast 3 
-        >> noSpaces 
-        >> result
-    let lastName = self.Factory.Backing(<@ self.LastName @>, "", validateName)
+    let searchText = ref ""
+    let unimarktProducts =
+        PricePreview.ProductCache.getCachedOrCalculate "unimarkt" Unimarkt.getProducts
+        |> Async.RunSynchronously
+    let shops = [
+        Shop("Unimarkt", unimarktProducts, self.WhenAnyValue(fun x -> x.SearchText))
+    ]
 
-    let hasValue str = not(System.String.IsNullOrWhiteSpace(str))
-    let okCommand = 
-        self.Factory.CommandSyncParamChecked(
-            (fun param -> MessageBox.Show(sprintf "Hello, %s" param) |> ignore), 
-            (fun param -> self.IsValid && hasValue self.FirstName && hasValue self.LastName), 
-            [ <@ self.FirstName @> ; <@ self.LastName @> ; <@ self.IsValid @> ])   // Or could be: [ <@ self.FullName @> ])
-
-    do
-        // Add in property dependencies
-        self.DependencyTracker.AddPropertyDependencies(<@@ self.FullName @@>, [ <@@ self.FirstName @@> ; <@@ self.LastName @@> ])
-
-    member x.FirstName with get() = firstName.Value and set value = firstName.Value <- value
-    member x.LastName with get() = lastName.Value and set value = lastName.Value <- value
-    member x.FullName with get() = x.FirstName + " " + x.LastName 
-    
-    member x.OkCommand = okCommand
-
-    // Note that you can filter the validations based on the propertyName parameter,
-    // which allows for more efficient processing since you can only check relevant info for that property
-    override x.Validate propertyName =
-        seq {
-            if String.IsNullOrWhiteSpace(x.FullName) then
-                yield EntityValidation(["You must provide a name"])
-            else if propertyName = "FullName" then
-                let err = x.FullName |> (validate propertyName >> notEqual "Reed Copsey" >> resultWithError "That is a poor choice of names")                    
-                // Alternatively, this can be done manually:
-//                  let err = 
-//                        match x.FullName with
-//                        | "Reed Copsey" -> ["That is a poor choice of names"]
-//                        | _ -> []
-                yield PropertyValidation("FullName", err)
-                yield EntityValidation(err)
-        }
+    member x.SearchText
+        with get() = searchText.Value
+        and set value = self.RaiseAndSetIfChanged(searchText, value, <@@ self.SearchText @@>)
+    member x.Shops = shops

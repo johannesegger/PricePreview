@@ -7,6 +7,11 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PricePreview", "PricePrevie
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PricePreview.Desktop", "PricePreview.Desktop\PricePreview.Desktop.fsproj", "{C285EC05-4C69-497C-879A-D4442312AFC8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{5D47C324-79AA-4938-9FC2-0F2F34383A0E}"
+	ProjectSection(SolutionItems) = preProject
+		paket.dependencies = paket.dependencies
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

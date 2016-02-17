@@ -37,7 +37,7 @@ let getProducts() = async {
                             |> function
                             | null -> None
                             | n -> n.InnerText.Trim() |> Some
-                        { Name = name; Amount = amount; PriceString = priceString; Price = price; BasePrice = basePrice }
+                        { Name = name; Amount = Grams 5.; Price = price.Value }
                     )
         })
         |> Async.Parallel

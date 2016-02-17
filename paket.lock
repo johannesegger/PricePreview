@@ -2,7 +2,40 @@ NUGET
   remote: https://www.nuget.org/api/v2
   specs:
     Expression.Blend.Sdk (1.0.2) - framework: >= net45
-    FSharp.ViewModule.Core (0.9.9.2)
+    FSharp.Control.Reactive (3.2.0)
+      FSharp.Core (>= 3.1.2)
+      Rx-Core (>= 2.2.5)
+      Rx-Interfaces (>= 2.2.5)
+      Rx-Linq (>= 2.2.5)
+    FSharp.Core (4.0.0.1)
     FsXaml.Wpf (0.9.9)
       Expression.Blend.Sdk (>= 1.0.2) - framework: >= net45
     HtmlAgilityPack (1.4.9)
+    MahApps.Metro (1.2.4)
+    Newtonsoft.Json (8.0.2)
+    reactiveui (6.5.0)
+      reactiveui-core (6.5.0)
+    reactiveui-core (6.5.0)
+      Rx-Main (>= 2.2.5)
+      Rx-WinRT (>= 2.2.5) - framework: portable-win81+wpa81, winv4.5, wpv8.0
+      Rx-Xaml (>= 2.2.5) - framework: >= net45, portable-win81+wpa81, winv4.5, wpv8.0
+      Splat (>= 1.0 < 2.0)
+    Rx-Core (2.2.5)
+      Rx-Interfaces (>= 2.2.5)
+    Rx-Interfaces (2.2.5)
+    Rx-Linq (2.2.5)
+      Rx-Core (>= 2.2.5)
+      Rx-Interfaces (>= 2.2.5)
+    Rx-Main (2.2.5)
+      Rx-Core (>= 2.2.5)
+      Rx-Interfaces (>= 2.2.5)
+      Rx-Linq (>= 2.2.5)
+      Rx-PlatformServices (>= 2.2.5)
+    Rx-PlatformServices (2.2.5)
+      Rx-Core (>= 2.2.5)
+      Rx-Interfaces (>= 2.2.5)
+    Rx-WinRT (2.2.5) - framework: portable-win81+wpa81, winv4.5, wpv8.0
+      Rx-Main (>= 2.2.5)
+    Rx-Xaml (2.2.5) - framework: >= net45, portable-win81+wpa81, winv4.5, wpv8.0
+      Rx-Main (>= 2.2.5)
+    Splat (1.6.2)

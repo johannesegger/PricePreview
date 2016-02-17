@@ -29,7 +29,7 @@ let getProducts() = async {
                             let amount = n.SelectSingleNode(".//span[contains(@class,'amount')]").InnerText.Trim()
                             let priceString = n.SelectSingleNode(".//span[contains(@class,'price')]").InnerText.Trim()
                             let price = tryParsePrice priceString
-                            { Name = name; Amount = amount; PriceString = priceString; Price = price; BasePrice = None }
+                            { Name = name; Amount = Grams 5.; Price = price.Value; }
                         )
                 })
                 |> Async.Parallel

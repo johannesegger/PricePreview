@@ -1,4 +1,8 @@
 source https://www.nuget.org/api/v2
-nuget fsharp.viewmodule.core
-nuget fsxaml.wpf
-nuget htmlagilitypack
+nuget HtmlAgilityPack
+nuget FSharp.Core
+nuget MahApps.Metro
+nuget Newtonsoft.Json
+nuget reactiveui
+nuget FsXaml.Wpf
+nuget FSharp.Control.Reactive

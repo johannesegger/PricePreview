@@ -2,15 +2,32 @@
 
 open System
 open System.Globalization
+open System.Text.RegularExpressions
 open Domain
 open Http
 
+let private tryParseFloat text =
+    let culture = CultureInfo.GetCultureInfo "en-US"
+    let (couldParseAmount, amount) = Double.TryParse(text, NumberStyles.Float, culture)
+    if couldParseAmount then Some amount
+    else None
+
 let private tryParsePrice (text: string) =
-    text.Replace("&euro; ", "")
-    |> fun x -> Double.TryParse(x, NumberStyles.Float ||| NumberStyles.AllowThousands, CultureInfo.GetCultureInfo "en-US")
-    |> function
-    | true, value -> Some value
-    | _ -> None
+    let m = Regex.Match(text, "^&euro;\s*(?<price>\d+\.\d+)\s*/\s*(?<amount>\d+)\s*(?<amountUnit>\w+)$")
+    if m.Success
+    then
+        tryParseFloat m.Groups.["amount"].Value
+        |> Option.bind (function | 0. -> None | x -> Some x)
+        |> Option.bind (fun amount ->
+            tryParseFloat m.Groups.["price"].Value
+            |> Option.bind (fun price ->
+                getAmount amount m.Groups.["amountUnit"].Value
+                |> Option.map (fun amount ->
+                    price, amount
+                )
+            )
+        )
+    else None
 
 let getProducts() = async {
     let url = Uri "http://shop.unimarkt.at/alle-produkte"
@@ -26,16 +43,20 @@ let getProducts() = async {
                 | null -> Seq.empty
                 | items ->
                     items
-                    |> Seq.map (fun n ->
+                    |> Seq.choose (fun n ->
                         let desc = n.SelectSingleNode("div[contains(@class,'desc')]")
                         let name = desc.SelectSingleNode("strong").InnerText.Trim()
                         let producer = desc.ChildNodes.[3].InnerText.Trim()
                         let fullName = sprintf "%s - %s" name producer
+
                         let amount = desc.ChildNodes.[5].InnerText.Trim()
                         let priceString = n.SelectSingleNode(".//span[contains(@class,'actualprice')]").InnerText.Trim()
-                        let price = tryParsePrice priceString
-                        let basePrice = n.SelectSingleNode(".//div[contains(@class,'vergleichspreis')]").InnerText.Trim()
-                        { Name = fullName; Amount = amount; PriceString = priceString; Price = price; BasePrice = Some basePrice }
+
+                        sprintf "%s / %s" priceString amount
+                        |> tryParsePrice
+                        |> Option.map (fun (price, amount) ->
+                            { Name = fullName; Amount = amount; Price = price }
+                        )
                     )
         })
         |> Async.Parallel
