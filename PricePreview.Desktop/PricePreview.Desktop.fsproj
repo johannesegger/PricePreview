@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>c285ec05-4c69-497c-879a-d4442312afc8</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>PricePreview.Desktop</RootNamespace>
     <AssemblyName>PricePreview.Desktop</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
@@ -61,7 +61,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Resource Include="ApplicationResources.xaml" />
     <Compile Include="Extensions.fs" />
-    <Compile Include="MainViewModel.fs" />
+    <Compile Include="ViewModels.fs" />
     <Resource Include="MainView.xaml" />
     <Compile Include="MainView.xaml.fs" />
     <Compile Include="MainWindow.xaml.fs" />

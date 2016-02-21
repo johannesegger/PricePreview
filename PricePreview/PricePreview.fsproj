@@ -52,6 +52,8 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Result.fs" />
+    <Compile Include="Helper.fs" />
     <Compile Include="Domain.fs" />
     <Compile Include="Http.fs" />
     <Compile Include="Hofer.fs" />
@@ -59,6 +61,7 @@
     <Compile Include="Unimarkt.fs" />
     <Compile Include="ProductCache.fs" />
     <None Include="paket.references" />
+    <None Include="GetProducts.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

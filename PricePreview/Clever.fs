@@ -1,4 +1,4 @@
-﻿module Clever
+﻿module PricePreview.Clever
 
 open System
 open System.Globalization
@@ -11,33 +11,34 @@ let private tryParsePrice (text: string) =
     | _ -> None
 
 let getProducts() = async {
-    let! startPage = Http.get "http://www.cleverkaufen.at/clevere_Produkte/clever_Produkte/Produktgruppe/Produktauswahl/cl_ProductMainCategory.aspx"
-    let! products =
-        startPage.DocumentNode.SelectNodes("//div[contains(@class,'teaser') and contains(@class,'cat')]//a[@href]")
-        |> Seq.map (fun n -> n.Attributes.["href"].Value)
-        |> Seq.map (fun href -> async {
-            let! productGroupPage = Http.get href
-            return!
-                productGroupPage.DocumentNode.SelectNodes("//div[contains(@class,'teaser') and contains(@class,'cat')]//a[@href]")
-                |> Seq.map (fun n -> n.Attributes.["href"].Value)
-                |> Seq.map (fun href -> async {
-                    let! productSubGroupPage = Http.get href
-                    return
-                        productSubGroupPage.DocumentNode.SelectNodes("//div[contains(@class,'teaser') and contains(@class,'prod')]")
-                        |> Seq.map (fun n ->
-                            let name = n.SelectSingleNode(".//a[contains(@class,'name')]/span[1]").InnerText.Trim()
-                            let amount = n.SelectSingleNode(".//span[contains(@class,'amount')]").InnerText.Trim()
-                            let priceString = n.SelectSingleNode(".//span[contains(@class,'price')]").InnerText.Trim()
-                            let price = tryParsePrice priceString
-                            { Name = name; Amount = Grams 5.; Price = price.Value; }
-                        )
-                })
-                |> Async.Parallel
-        })
-        |> Async.Parallel
-    return
-        products
-        |> Seq.collect id
-        |> Seq.collect id
-        |> Seq.toList
+//    let! startPage = Http.get "http://www.cleverkaufen.at/clevere_Produkte/clever_Produkte/Produktgruppe/Produktauswahl/cl_ProductMainCategory.aspx"
+//    let! products =
+//        startPage.DocumentNode.SelectNodes("//div[contains(@class,'teaser') and contains(@class,'cat')]//a[@href]")
+//        |> Seq.map (fun n -> n.Attributes.["href"].Value)
+//        |> Seq.map (fun href -> async {
+//            let! productGroupPage = Http.get href
+//            return!
+//                productGroupPage.DocumentNode.SelectNodes("//div[contains(@class,'teaser') and contains(@class,'cat')]//a[@href]")
+//                |> Seq.map (fun n -> n.Attributes.["href"].Value)
+//                |> Seq.map (fun href -> async {
+//                    let! productSubGroupPage = Http.get href
+//                    return
+//                        productSubGroupPage.DocumentNode.SelectNodes("//div[contains(@class,'teaser') and contains(@class,'prod')]")
+//                        |> Seq.map (fun n ->
+//                            let name = n.SelectSingleNode(".//a[contains(@class,'name')]/span[1]").InnerText.Trim()
+//                            let amount = n.SelectSingleNode(".//span[contains(@class,'amount')]").InnerText.Trim()
+//                            let priceString = n.SelectSingleNode(".//span[contains(@class,'price')]").InnerText.Trim()
+//                            let price = tryParsePrice priceString
+//                            { Name = name; Amount = Grams 5.; DefaultAmount = Grams 5.; Price = price.Value; }
+//                        )
+//                })
+//                |> Async.Parallel
+//        })
+//        |> Async.Parallel
+//    return
+//        products
+//        |> Seq.collect id
+//        |> Seq.collect id
+//        |> Seq.toList
+    return Success []
 }

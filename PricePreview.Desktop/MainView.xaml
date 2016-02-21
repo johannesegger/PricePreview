@@ -2,10 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:fsxaml="http://github.com/fsprojects/FsXaml"
-             xmlns:local="clr-namespace:PricePreview.Desktop;assembly=PricePreview.Desktop"
-             MinHeight="220"
-             MinWidth="300"
-             Height="Auto">
+             xmlns:local="clr-namespace:PricePreview.Desktop.ViewModels;assembly=PricePreview.Desktop">
     <UserControl.DataContext>
         <local:MainViewModel/>
     </UserControl.DataContext>
@@ -17,6 +14,9 @@
         </Style>
     </UserControl.Resources>
     <DockPanel>
+        <CheckBox DockPanel.Dock="Top"
+                  IsChecked="{Binding ShowAllProducts}"
+                  Content="Alle Produkte anzeigen"/>
         <TextBox DockPanel.Dock="Top"
                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                  metro:TextBoxHelper.Watermark="Suchbegriff" />
@@ -38,19 +38,39 @@
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
-                        <ListBox ItemsSource="{Binding Products}"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <DockPanel>
-                                        <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" />
-                                        <TextBlock Text="{Binding Unit}" />
-                                        <TextBlock Text="{Binding Name}" />
-                                        <TextBlock Text="{Binding Price, StringFormat='{}{0:C}'}" />
-                                    </DockPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        <DataGrid ItemsSource="{Binding Products}"
+                                  AutoGenerateColumns="False"
+                                  HeadersVisibility="None"
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  CanUserReorderColumns="False"
+                                  CanUserResizeColumns="False"
+                                  CanUserResizeRows="False"
+                                  IsReadOnly="True"
+                                  SelectionMode="Single">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="50" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Binding="{Binding Unit}" />
+                                <DataGridTextColumn Binding="{Binding Name}"
+                                                    Width="*" />
+                                <DataGridTextColumn Binding="{Binding Price, StringFormat='{}{0:C}'}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </DockPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
